@@ -9,25 +9,17 @@ export default function TodoList({terminalValue,  todos, fetchHandler}) {
   
 
   useEffect(() => {
-    const now = new Date();
-    now.setHours(now.getHours() + 3);
-    const endDate = now.toJSON().replace("T", " ").replace("Z", "");
-    const dateOffset = (24*60*60*1000) * 7;
-    const myDate = new Date();
-    const startDate = new Date(myDate.setTime(myDate.getTime() - dateOffset)) ;
-    console.log('startDate------->',startDate);
-    console.log('endDate------->',endDate);
-    
-    fetchHandler(startDate, endDate)
+  
+    fetchHandler()
   }, [terminalValue] )
   // ⚠️ Проверьте подключение!
 
   return (
     <View style={styles.list} >
-      <View style={{ alignItems: 'center' }}><Text style={{ fontSize: 25, fontWeight: 'bold' }}>Переводы</Text></View>
+      <View style={{ alignItems: 'center' }}><Text style={{ fontSize: 25, fontWeight: 'bold' }}>{terminalValue[0] !== undefined?`Переводы`:''}</Text></View>
       <ScrollView style={styles.todolist}>
         
-        {todos.length > 0 ? todos.map(todo => <TodoItem key={todo["date"]} todo={todo} />) : <View style={{ alignItems: 'center' }}><Text style={{ marginTop: 100, fontSize: 20, fontWeight: 'bold'}}>⚠️ Проверьте подключение!</Text></View>}
+        {todos !== undefined && todos.length ? todos.map(todo => <TodoItem key={todo["date"]} todo={todo} />) : <View style={{ alignItems: 'center'}}><Text style={{ fontSize: 20, fontWeight: 'bold'}}>{terminalValue[0] !== undefined?`⚠️ Проверьте подключение!`:`Выберите заправку`}</Text></View>}
       </ScrollView>
     </View>
   )
