@@ -1,10 +1,7 @@
-import React, { useState, useCallback } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Text, View, StyleSheet, Button, ScrollView, RefreshControl, Picker } from 'react-native'
+import React, { useState } from 'react'
+import { Text, View, StyleSheet, ScrollView, RefreshControl } from 'react-native'
 
 export const Navbar = ({terminalValue, fetchHandler}) => {
-  const terminal = [['Rusoil 11', 1647788006225], ['Rusoil 12', 1646488774183], ['Rusoil 2', 1646488910428], ['Rusoil 3', 1646488994888]]
-  const [value, setValue] = useState(1)
   const [refreshing, setRefreshing] = useState(false)
   
 
@@ -21,18 +18,13 @@ export const Navbar = ({terminalValue, fetchHandler}) => {
       <RefreshControl
         refreshing={refreshing}
         onRefresh={onRefresh}
-      />}
-      >
-    <View style={styles.navbar} >
-    
-      <Text style={{ fontSize: 25, fontWeight: 'bold' }}>{terminalValue[0] !== undefined?`${terminalValue[0]}`:`Заправка не выбрана`}</Text>
-  
-   
-    </View>
+      />}>
+      <View style={styles.navbar} >
+        <Text style={{ fontSize: 25, fontWeight: 'bold' }}>{terminalValue[0] !== undefined?`${terminalValue[0]}`:`Заправка не выбрана`}</Text>
+      </View>
     <View></View>
     </ScrollView>
   )
-
   
 }
 

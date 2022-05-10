@@ -1,32 +1,37 @@
-import { useEffect, useState, useCallback, useRef,  } from 'react';
-import { Button, RefreshControl, StyleSheet, Text, View, Picker, DrawerLayoutAndroid, Alert } from 'react-native';
+import { useEffect, useState, useRef,  } from 'react';
+import { Button, StyleSheet, Text, View, DrawerLayoutAndroid,  } from 'react-native';
+import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Navbar } from './src/components/Navbar';
 import TodoList from './src/components/TodoList';
 import ExitApp from './src/components/BackHandler';
-import Menu from './src/components/Menu';
-
 export default function App() {
 
   const [todos, setTodos] = useState([])
   const [terminalValue, setTerminalValue] = useState([])
-  
-
-
-  useEffect(()=>{
-    try {
+  const [selectedLanguage, setSelectedLanguage] = useState();
+  const logHandler = () => {
+     try {
       AsyncStorage.getItem('@terminal_Key')
-      .then(res=> {
-        console.log(res);
-        if(res.length){
-          setTerminalValue(res.json())
+      .then(res=> JSON.parse(res)) 
+      .then(res => { 
+          setTerminalValue(res)
+        if(terminalValue ==! null){ 
+          console.log(res); 
         }
       })
     } catch(e) {
       setTerminalValue(['Rusoil 11', 1647788006225])
     }
+  }  
+ 
+  useEffect(()=>{
+    // let cleanupFunction = false;
+    logHandler()
+    // return () => cleanupFunction = true;
+  }, []) 
 
-  }, [terminalValue])
+
 
   const fetchHandler = () =>{
 
@@ -56,68 +61,56 @@ export default function App() {
       .then(response => response.json())
       .then(res => setTodos(res.reverse()))
       .catch(() =>setTodos())
-    }
-    
+    } 
+     
   }
   const drawer = useRef(null);
 
   const terminal = [['Rusoil 11', 1647788006225], ['Rusoil 12', 1646488774183], ['Rusoil 2', 1646488910428], ['Rusoil 3', 1646488994888]]
   const navigationView = () => (
     <View style={[styles.wrap, styles.navigationContainer]}>
-      <Text style={{ fontSize: 25, fontWeight: 'bold', marginTop:50 }}>{terminalValue[0] !== undefined?`${terminalValue[0]}`:`Заправка не выбрана`}</Text>
+        <Text style={{ fontSize: 25, fontWeight: 'bold', marginTop:50 }}>{terminalValue[0] !== undefined ?`${terminalValue[0]}`:`Заправка не выбрана`}</Text>
         <Picker
-        selectedValue=''
+        selectedValue={selectedLanguage}  
         style={{ height: 50, width: 150, marginBottom:150 }}
         onValueChange={(itemValue, itemIndex) => {
+          setSelectedLanguage(itemValue)
           try {
             const jsonValue = JSON.stringify(terminal[itemIndex])
-            AsyncStorage.setItem('@storage_Key', jsonValue)
+            AsyncStorage.setItem('@terminal_Key', jsonValue)
             .then(setTerminalValue(terminal[itemIndex]))
-          } catch (e) {
-            // saving error
-          }
-        }}
-      >
-        {terminal.map(el => <Picker.Item label={`${el[0]}`} value={`${el[1]}`} />)}
-        
-      </Picker>
-      <Button
-        title="Закрыть меню"
-        onPress={() => drawer.current.closeDrawer()}
-      /> 
+          } catch (e) {}
+        }}> 
+        {terminal.map(el => <Picker.Item key={el[1].toString()} label={`${el[0]}`} value={`${el[1]}`} />)}
+        </Picker>
+        <Button
+          title="Закрыть меню"
+          onPress={() => drawer.current.closeDrawer()}
+        /> 
     </View>);
 
   return (
-      <DrawerLayoutAndroid
+    <DrawerLayoutAndroid
         ref={drawer}
         drawerWidth={300}
         drawerPosition="left"
-        renderNavigationView={navigationView}
-      >
-    <View style={styles.container}>
-      
-      <ExitApp/>
-      {/* <Button
-          title="Open drawer"
-          onPress={() => drawer.current.openDrawer()}
-        /> */}
-      <Navbar setTerminalValue={setTerminalValue} terminalValue={terminalValue} todos={todos} setTodos={setTodos} fetchHandler={fetchHandler}/>
-      <TodoList terminalValue={terminalValue} todos={todos} setTodos={setTodos} fetchHandler={fetchHandler} />
-    </View>
+        renderNavigationView={navigationView}>
+      <View style={styles.container} >
+        <ExitApp/>
+        <Navbar  setTerminalValue={setTerminalValue} terminalValue={terminalValue} todos={todos} setTodos={setTodos} fetchHandler={fetchHandler}/>
+        <TodoList  terminalValue={terminalValue} todos={todos} fetchHandler={fetchHandler} />
+      </View>
     </DrawerLayoutAndroid>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // alignItems: 'flex-start',
     justifyContent: 'flex-start',
     backgroundColor: 'white',
   },
   navigationContainer: {
     backgroundColor: "#ecf0f1",
-    // backgroundColor: "white"
   },
   paragraph: {
     padding: 16,
@@ -127,7 +120,6 @@ const styles = StyleSheet.create({
   wrap: {
     flex: 1,
     alignItems: "center",
-    // justifyContent: "center",
     padding: 16,
   },
  
