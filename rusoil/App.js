@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef,  } from 'react';
 import { Button, StyleSheet, Text, View, DrawerLayoutAndroid,  } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Navbar } from './src/components/Navbar';
 import TodoList from './src/components/TodoList';
 import ExitApp from './src/components/BackHandler';
@@ -10,26 +9,8 @@ export default function App() {
   const [todos, setTodos] = useState([])
   const [terminalValue, setTerminalValue] = useState([])
   const [selectedLanguage, setSelectedLanguage] = useState();
-  const logHandler = () => {
-     try {
-      AsyncStorage.getItem('@terminal_Key')
-      .then(res=> JSON.parse(res)) 
-      .then(res => { 
-          setTerminalValue(res)
-        if(terminalValue ==! null){ 
-          console.log(res); 
-        }
-      })
-    } catch(e) {
-      setTerminalValue(['Rusoil 11', 1647788006225])
-    }
-  }  
- 
-  useEffect(()=>{
-    // let cleanupFunction = false;
-    logHandler()
-    // return () => cleanupFunction = true;
-  }, []) 
+  
+
 
 
 
@@ -75,11 +56,8 @@ export default function App() {
         style={{ height: 50, width: 150, marginBottom:150 }}
         onValueChange={(itemValue, itemIndex) => {
           setSelectedLanguage(itemValue)
-          try {
-            const jsonValue = JSON.stringify(terminal[itemIndex])
-            AsyncStorage.setItem('@terminal_Key', jsonValue)
-            .then(setTerminalValue(terminal[itemIndex]))
-          } catch (e) {}
+          setTerminalValue(terminal[itemIndex])
+         
         }}> 
         {terminal.map(el => <Picker.Item key={el[1].toString()} label={`${el[0]}`} value={`${el[1]}`} />)}
         </Picker>
